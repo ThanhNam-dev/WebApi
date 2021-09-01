@@ -1,3 +1,4 @@
+using Core.Interface;
 using Infrastructure.Data;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -31,6 +32,7 @@ namespace API
 			services.AddDbContext<DataDbContext>(options =>
 				options.UseSqlServer(
 					Configuration.GetConnectionString("ConnectionString")));
+			services.AddScoped<IProductRepository, ProductRepository>();
 			services.AddControllers();
 			services.AddSwaggerGen(c =>
 			{
