@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Core.Entity;
 using Infrastructure.Data;
+using Core.Interface;
 
 namespace API.Controllers
 {
@@ -14,95 +15,37 @@ namespace API.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly DataDbContext _context;
+        private readonly IProductRepository _repo;
 
-        public ProductsController(DataDbContext context)
+        public ProductsController(IProductRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
-        // GET: api/Products
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Product>>> GetProducts()
+        public async Task<ActionResult<List<Product>>> GetProducts()
         {
-            return await _context.Product.ToListAsync();
+            var products = await _repo.GetProductsAsync();
+            return Ok(products);
         }
 
-        // GET: api/Products/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Product>> GetProduct(Guid id)
         {
-            var product = await _context.Product.FindAsync(id);
-
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            return product;
+            return await _repo.GetProductByIdAsync(id);
         }
 
-        // PUT: api/Products/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProduct(Guid id, Product product)
+        [HttpGet("brand")]
+        public async Task<ActionResult<List<ProductBrand>>> GetProductBrands()
         {
-            if (id != product.Id)
-            {
-                return BadRequest();
-            }
-
-            _context.Entry(product).State = EntityState.Modified;
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProductExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
+            var products = await _repo.GetProductBrandsAsync();
+            return Ok(products);
         }
-
-        // POST: api/Products
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Product>> PostProduct(Product product)
+        [HttpGet("type")]
+        public async Task<ActionResult<List<ProductType>>> GetProductTypes()
         {
-            _context.Product.Add(product);
-            await _context.SaveChangesAsync();
-
-            return CreatedAtAction("GetProduct", new { id = product.Id }, product);
-        }
-
-        // DELETE: api/Products/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProduct(Guid id)
-        {
-            var product = await _context.Product.FindAsync(id);
-            if (product == null)
-            {
-                return NotFound();
-            }
-
-            _context.Product.Remove(product);
-            await _context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool ProductExists(Guid id)
-        {
-            return _context.Product.Any(e => e.Id == id);
+            var products = await _repo.GetProductTypesAsync();
+            return Ok(products);
         }
     }
 }
