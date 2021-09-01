@@ -1,4 +1,5 @@
 ﻿using Core.Entity;
+using Infrastructure.Data.SeedData;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace Infrastructure.Data
 		{
 			base.OnModelCreating(modelBuilder);
 			modelBuilder.ApplyConfigurationsFromAssembly(Assembly.GetExecutingAssembly());
+			modelBuilder.Seed();
 		}
 	}
 }
